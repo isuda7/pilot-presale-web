@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { db, ensureSchema } from './db'
+import { db, ensureSchema } from './db.js'
 
 const app = new Hono()
 
