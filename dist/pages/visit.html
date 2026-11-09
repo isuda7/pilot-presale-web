@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>방문예약 및 관심등록</title>
+  <script type="module" crossorigin src="/assets/visit-CIHX34_U.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/layout-Dd2zZ829.js">
+  <link rel="stylesheet" crossorigin href="/assets/layout-rV9jOUuy.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="inner">
+    <h1 class="page-title">방문예약 및 관심등록</h1>
+    <form class="form" id="apply-form">
+      <label for="name">성함</label>
+      <input type="text" id="name" name="name" maxlength="50" required />
+      <label for="phone">연락처</label>
+      <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required />
+      <label for="message">방문예약 및 문의사항</label>
+      <textarea id="message" name="message" maxlength="2000"></textarea>
+      <label class="agree"><input type="checkbox" id="agreed" required /> 개인정보 수집 및 이용에 동의합니다. (성함, 연락처, 문의내용 / 상담 목적)</label>
+      <button class="btn" type="submit">신청하기</button>
+      <p class="msg" id="msg" role="status"></p>
+    </form>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>

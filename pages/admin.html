@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>관리자 - 신청 목록</title>
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="inner">
+    <h1 class="page-title">관리자</h1>
+    <form class="form" id="login-form">
+      <label for="pw">관리자 비밀번호</label>
+      <input type="password" id="pw" autocomplete="current-password" required />
+      <p class="msg err" id="login-msg"></p>
+      <button class="btn" type="submit">로그인</button>
+    </form>
+    <section id="admin-panel" class="hidden">
+      <div class="admin-bar">
+        <h2>신청 목록 <small id="count"></small></h2>
+        <button class="btn sm" id="logout">로그아웃</button>
+      </div>
+      <table class="list">
+        <thead><tr><th>번호</th><th>성함</th><th>연락처</th><th>문의사항</th><th>접수일시</th><th>상태</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/src/js/layout.js"></script>
+  <script type="module" src="/src/js/admin.js"></script>
+</body>
+</html>
