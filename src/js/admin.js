@@ -21,7 +21,14 @@ function show(loggedIn) {
   $('admin-panel').classList.toggle('hidden', !loggedIn)
 }
 
-function logout() { sessionStorage.removeItem(KEY); show(false) }
+// 로그아웃: 토큰을 지우고, 열려 있는 사이트 화면(인라인 편집 바)에도 알려 바로 닫히게 한다.
+function logout() {
+  sessionStorage.removeItem(KEY)
+  try { const ch = new BroadcastChannel('presale-auth'); ch.postMessage('logout'); ch.close() } catch {}
+  try { localStorage.setItem('presale-logout', String(Date.now())) } catch {} // BroadcastChannel 미지원 브라우저용 (storage 이벤트로 다른 탭에 전달)
+  window.dispatchEvent(new Event('presale-logout')) // 같은 화면
+  show(false)
+}
 
 // 현재 조회 조건(검색어·상태·기간)을 쿼리 문자열로
 function filterQuery() {

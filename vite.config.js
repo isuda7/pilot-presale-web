@@ -37,8 +37,9 @@ export default defineConfig(({ mode }) => {
 
   // ---- 입력 구성 ----
   const input = {}
-  const virtual = new Map() // 가상 경로(/t/<유형>/…) → 실제 원본 파일 (데모 빌드용)
-  if (demo) {
+  const virtual = new Map() // 가상 경로(/t/<유형>/…) → 실제 원본 파일 (템플릿 미리보기)
+  // 템플릿 미리보기(/t/<유형>/ + 선택 페이지 /t/)는 유형을 고정하지 않은 빌드(기본·데모)에 포함한다.
+  const addTemplates = () => {
     for (const t of typeKeys) {
       const rests = new Set(['index.html', ...basePages.map((f) => `pages/${f}`)])
       typePageFiles(t).forEach((f) => rests.add(f === 'index.html' ? 'index.html' : `pages/${f}`))
@@ -48,11 +49,17 @@ export default defineConfig(({ mode }) => {
         input[`${t}__${rest.replace(/[/.]/g, '_')}`] = id
       }
     }
+  }
+  if (demo) {
+    addTemplates() // 데모 전용 빌드: 기본 화면·가이드 없이 템플릿만, 선택 페이지가 '/'
   } else {
     input.index = resolve(root, 'index.html')
     for (const f of basePages) input[f.replace('.html', '')] = resolve(pagesDir, f)
-    // 내부용 가이드 매뉴얼(guide/)은 유형(템플릿·현장)을 지정한 빌드와 데모 빌드에서는 넣지 않는다. (공개 배포에 포함되지 않게)
-    if (!typeName) input.guide = resolve(root, 'guide/index.html')
+    if (!typeName) {
+      // 기본 빌드(내부용 초안): 가이드 + 템플릿 미리보기를 함께 배포한다. 현장 빌드(SITE_TYPE)에는 둘 다 넣지 않는다.
+      input.guide = resolve(root, 'guide/index.html')
+      addTemplates()
+    }
   }
   // 현장 빌드(SITE_TYPE): 유형 페이지가 기본 경로를 교체하거나 새로 추가된다
   const overrides = new Map()
@@ -100,8 +107,8 @@ main{max-width:1080px;margin:0 auto;padding:56px 20px 72px}h1{font-size:30px;mar
     },
     // 데모 빌드: 선택 페이지를 '/' 와 '/t/' 에 만든다
     generateBundle() {
-      if (!demo) return
-      for (const fileName of ['index.html', 't/index.html']) this.emitFile({ type: 'asset', fileName, source: pickerHtml() })
+      if (!virtual.size) return
+      for (const fileName of demo ? ['index.html', 't/index.html'] : ['t/index.html']) this.emitFile({ type: 'asset', fileName, source: pickerHtml() })
       for (const k of typeKeys) { const f = heroFile(k); if (f) this.emitFile({ type: 'asset', fileName: `t/_thumb/${k}.jpg`, source: readFileSync(f) }) }
     },
     configureServer(server) {

@@ -186,10 +186,31 @@ async function save() {
     const res = await call('/api/admin/content', { method: 'PUT', body: JSON.stringify({ scope: SCOPE, key: j.k, value }) })
     if (res.success) {
       if (j.k === 'site') dirtySite.clear(); else { dirtyKeys.delete(j.k); SITE.content[j.k.slice(2)] = res.data }
-    } else { failed++; say(res.error || '저장하지 못했습니다.', false); if (res.status === 401) { sessionStorage.removeItem(TOKEN_KEY); say('로그인이 만료되었습니다. 관리자 화면에서 다시 로그인하세요.', false) } break }
+    } else { failed++; say(res.error || '저장하지 못했습니다.', false); if (res.status === 401) { sessionStorage.removeItem(TOKEN_KEY); say('로그인이 만료되었습니다. 편집 바를 닫고 관리자 화면에서 다시 로그인하세요.', false); setTimeout(teardown, 2500) } break }
   }
   refresh()
   if (!failed) say('저장되었습니다. 사이트에 바로 반영됩니다.', true)
+}
+
+// 로그아웃·토큰 만료 시 편집 바와 편집 모드를 즉시 없앤다. 수정 중이던 내용은 저장할 수 없으므로 버린다.
+function teardown() {
+  dirtyKeys.clear(); dirtySite.clear()
+  const url = new URL(location.href)
+  url.searchParams.delete('edit') // ?edit=1 이 남아 있으면 로그인 화면으로 보내므로 제거하고 사이트에 머문다
+  location.replace(url.toString())
+}
+const authed = () => !!sessionStorage.getItem(TOKEN_KEY)
+function watchAuth() {
+  const guard = () => { if (!authed()) teardown() }
+  // ① 같은 브라우저의 다른 탭/창(관리자 화면)에서 로그아웃
+  try { const ch = new BroadcastChannel('presale-auth'); ch.onmessage = (e) => { if (e.data === 'logout') { sessionStorage.removeItem(TOKEN_KEY); teardown() } } } catch {}
+  window.addEventListener('presale-logout', guard) // 같은 화면에서 로그아웃
+  window.addEventListener('storage', (e) => { if (e.key === 'presale-logout') { sessionStorage.removeItem(TOKEN_KEY); teardown() } }) // 다른 탭(BroadcastChannel 미지원 브라우저 포함)
+  setInterval(guard, 1500) // 어떤 경로로든 로그인 정보가 사라졌으면 편집 바를 닫는다
+  // ② 뒤로 가기(캐시된 화면 복원)·탭 전환·창 포커스로 돌아왔을 때 토큰 확인
+  window.addEventListener('pageshow', (e) => { if (e.persisted) guard() })
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') guard() })
+  window.addEventListener('focus', guard)
 }
 
 export async function initInlineEdit({ start }) {
@@ -202,13 +223,21 @@ export async function initInlineEdit({ start }) {
       <button type="button" class="ie-save" disabled>저장</button>
       <button type="button" class="ie-cancel" disabled>변경 취소</button>
       <a class="ie-link" href="${BASE}pages/admin.html#editor">관리자 화면 ↗</a>
+      <button type="button" class="ie-logout">로그아웃</button>
       <span class="ie-hint">점선 영역을 눌러 바로 수정 · 🔒 개인정보·고지문·메뉴는 수정할 수 없습니다</span>
     </div>`)
   bar = document.querySelector('.ie-bar')
   bind()
+  watchAuth()
   $('.ie-toggle').addEventListener('click', () => {
     if (editing && dirtyKeys.size + dirtySite.size && !confirm('저장하지 않은 수정이 있습니다. 편집 모드를 끄면 화면의 수정 내용이 사라집니다. 계속할까요?')) return
     if (editing) location.reload(); else enable()
+  })
+  $('.ie-logout').addEventListener('click', () => {
+    if (dirtyKeys.size + dirtySite.size && !confirm('저장하지 않은 수정이 있습니다. 로그아웃하면 사라집니다. 계속할까요?')) return
+    sessionStorage.removeItem(TOKEN_KEY)
+    try { const ch = new BroadcastChannel('presale-auth'); ch.postMessage('logout'); ch.close() } catch {}
+    teardown()
   })
   $('.ie-save').addEventListener('click', save)
   $('.ie-cancel').addEventListener('click', () => { if (confirm('저장하지 않은 수정을 모두 취소하고 새로고침합니다.')) { dirtyKeys.clear(); dirtySite.clear(); location.reload() } })

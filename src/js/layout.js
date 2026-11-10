@@ -93,7 +93,7 @@ document.getElementById('site-footer').innerHTML = `
     ${company ? `<p class="ft-co">${company}</p>` : ''}
     ${SITE.address ? `<p><span data-e="site" data-f="address">${esc(SITE.address)}</span>${SITE.hours ? ` · 운영시간 <span data-e="site" data-f="hours">${esc(SITE.hours)}</span>` : ''}</p>` : ''}
     ${SITE.notices.map((n) => `<p>${esc(n)}</p>`).join('')}
-    <p><a href="${href(MODULES.find((m) => m.key === 'privacy'))}">개인정보처리방침</a>${SITE.showAdminLink ? ` · <a href="${BASE}pages/admin.html">관리자</a>` : ''}${import.meta.env.DEV && !TYPE_NAME ? ' · <a href="/t/">템플릿 목록</a>' : ''}</p>
+    <p><a href="${href(MODULES.find((m) => m.key === 'privacy'))}">개인정보처리방침</a>${SITE.showAdminLink ? ` · <a href="${BASE}pages/admin.html">관리자</a>` : ''}${!import.meta.env.SITE_TYPE && !PREVIEW ? ' · <a href="/t/">템플릿 목록</a>' : ''}</p>
   </div></footer>`
 
 // ---- 메인 히어로 문구 + 메인 섹션 ----
@@ -117,4 +117,4 @@ fillArt()
 // 방문자에게는 아무것도 로드되지 않는다. 관리자 토큰이 있으면 편집 바를 불러온다. ?edit=1 로 열면 바로 편집 모드.
 const hasToken = !!sessionStorage.getItem('presale_admin_token')
 if (new URLSearchParams(location.search).get('edit') === '1' && !hasToken) location.replace(`${BASE}pages/admin.html`)
-else if (hasToken && document.querySelector('[data-e]')) import('./inline-edit.js').then((m) => m.initInlineEdit({ start: new URLSearchParams(location.search).get('edit') === '1' }))
+else if (hasToken && document.querySelector('[data-e]') && !document.getElementById('admin-panel')) import('./inline-edit.js').then((m) => m.initInlineEdit({ start: new URLSearchParams(location.search).get('edit') === '1' }))
