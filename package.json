@@ -1,6 +1,6 @@
 {
   "name": "pilot-presale",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,11 +8,17 @@
     "dev:api": "tsx watch server/dev.ts",
     "dev:web": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gen:pages": "node scripts/gen-pages.mjs",
+    "type:report": "node scripts/type-report.mjs",
+    "check:site": "tsx scripts/check-site.ts",
+    "build:demo": "vite build --mode demo",
+    "content": "tsx scripts/content-sync.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.15.0",
-    "hono": "^4.13.5"
+    "hono": "^4.13.5",
+    "marked": "^12.0.2"
   },
   "devDependencies": {
     "@hono/node-server": "^1.14.0",

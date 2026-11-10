@@ -1,11 +1,12 @@
 import { API_BASE } from './config.js'
+import { initEditor } from './admin-editor.js'
 
 const KEY = 'presale_admin_token'
 const $ = (id) => document.getElementById(id)
 const STATUS = { new: '신규', contacted: '연락완료', done: '처리완료' }
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 
-async function api(path, opts = {}) {
+export async function api(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     ...opts,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionStorage.getItem(KEY) || ''}` },
@@ -22,8 +23,18 @@ function show(loggedIn) {
 
 function logout() { sessionStorage.removeItem(KEY); show(false) }
 
+// 현재 조회 조건(검색어·상태·기간)을 쿼리 문자열로
+function filterQuery() {
+  const p = new URLSearchParams()
+  for (const [k, id] of [['q', 'f-q'], ['status', 'f-status'], ['from', 'f-from'], ['to', 'f-to']]) {
+    if ($(id).value) p.set(k, $(id).value)
+  }
+  const s = p.toString()
+  return s ? `?${s}` : ''
+}
+
 async function load() {
-  const json = await api('/api/admin/applications')
+  const json = await api(`/api/admin/applications${filterQuery()}`)
   if (!json.success) return
   show(true)
   $('count').textContent = `(${json.data.length}건)`
@@ -56,5 +67,30 @@ $('rows').addEventListener('click', async (e) => {
   await api(`/api/admin/applications/${e.target.dataset.id}`, { method: 'DELETE' })
   load()
 })
+
+$('filters').addEventListener('submit', (e) => { e.preventDefault(); load() })
+$('f-reset').addEventListener('click', () => { $('filters').reset(); load() })
+
+// CSV: 인증 헤더가 필요하므로 fetch 로 받아 파일로 저장한다. 현재 조회 조건이 그대로 적용된다.
+$('csv').addEventListener('click', async () => {
+  const res = await fetch(`${API_BASE}/api/admin/applications.csv${filterQuery()}`, { headers: { Authorization: `Bearer ${sessionStorage.getItem(KEY) || ''}` } })
+  if (res.status === 401) { logout(); return }
+  if (!res.ok) { alert('CSV를 만들지 못했습니다.'); return }
+  const url = URL.createObjectURL(await res.blob())
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'applications.csv' })
+  a.click()
+  URL.revokeObjectURL(url)
+})
+
+// 탭: 신청 목록 / 콘텐츠 편집
+let editorReady = false
+function openTab(name) {
+  document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === name))
+  $('tab-apps').classList.toggle('hidden', name !== 'apps')
+  $('tab-editor').classList.toggle('hidden', name !== 'editor')
+  if (name === 'editor' && !editorReady) { editorReady = true; initEditor($('tab-editor')) }
+}
+document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => openTab(b.dataset.tab)))
+if (location.hash.startsWith('#editor')) openTab('editor')
 
 if (sessionStorage.getItem(KEY)) load()

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>관리자 - 신청 목록</title>
+  <title>관리자</title>
 </head>
 <body>
   <div id="site-header"></div>
@@ -18,13 +18,25 @@
     </form>
     <section id="admin-panel" class="hidden">
       <div class="admin-bar">
-        <h2>신청 목록 <small id="count"></small></h2>
+        <div class="tabs" role="tablist"><button class="tab on" data-tab="apps" role="tab">신청 목록</button><button class="tab" data-tab="editor" role="tab">콘텐츠 편집</button></div>
         <button class="btn sm" id="logout">로그아웃</button>
       </div>
+      <div id="tab-apps">
+      <h2 class="adm-h">신청 목록 <small id="count"></small></h2>
+      <form class="filters" id="filters">
+        <input type="search" id="f-q" placeholder="성함·연락처·문의 검색" />
+        <select id="f-status"><option value="">전체 상태</option><option value="new">신규</option><option value="contacted">연락완료</option><option value="done">처리완료</option></select>
+        <input type="date" id="f-from" aria-label="시작일" /> ~ <input type="date" id="f-to" aria-label="종료일" />
+        <button class="btn sm" type="submit">조회</button>
+        <button class="btn sm" type="button" id="f-reset">초기화</button>
+        <button class="btn sm" type="button" id="csv">CSV 다운로드</button>
+      </form>
       <table class="list">
         <thead><tr><th>번호</th><th>성함</th><th>연락처</th><th>문의사항</th><th>접수일시</th><th>상태</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
+      </div>
+      <div id="tab-editor" class="hidden"></div>
     </section>
   </main>
   <div id="site-footer"></div>

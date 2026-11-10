@@ -8,14 +8,22 @@
 <body>
   <div id="site-header"></div>
   <section class="hero">
-    <h1>프리미엄 분양 파일럿</h1>
-    <p>메인 비주얼/카피 영역 (준비중)</p>
-    <a class="btn light" href="/pages/visit.html">방문예약 · 관심등록</a>
+    <div class="hero-media" data-art="hero"></div>
+    <div class="inner hero-in">
+      <div class="hero-copy">
+        <p class="eyebrow" data-site="hero-eyebrow"></p>
+        <h1 data-site="hero-title"></h1>
+        <p class="hero-sub" data-site="hero-sub"></p>
+        <div class="hero-cta">
+          <a class="btn light" data-site-cta href="/pages/visit.html"></a>
+          <a class="btn ghost" data-site-cta2 href="/pages/biz.html"></a>
+        </div>
+      </div>
+    </div>
+    <ul class="inner facts" data-site="facts"></ul>
   </section>
-  <main class="inner">
-    <section class="section"><h2>사업개요</h2><div class="placeholder">콘텐츠 영역 (준비중)</div></section>
-    <section class="section"><h2>입지환경</h2><div class="placeholder">콘텐츠 영역 (준비중)</div></section>
-  </main>
+  <!-- 메인 섹션은 설정(SITE.home)에 따라 src/js/home.js 가 그린다 -->
+  <main id="home-main"></main>
   <div id="site-footer"></div>
   <script type="module" src="/src/js/layout.js"></script>
 </body>

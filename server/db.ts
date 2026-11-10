@@ -28,6 +28,23 @@ export function ensureSchema() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deleted_at DATETIME DEFAULT NULL
       )`,
+      // 웹에서 수정한 콘텐츠(파일 기본값 위에 마지막으로 얹는 값). scope = 유형 이름('' = 기본 사이트)
+      `CREATE TABLE IF NOT EXISTS site_content (
+        scope TEXT NOT NULL DEFAULT '',
+        key TEXT NOT NULL,
+        value TEXT NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (scope, key)
+      )`,
+      // 수정 전 값을 보관(최근 20개). 되돌리기·복원에 사용
+      `CREATE TABLE IF NOT EXISTS site_content_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        scope TEXT NOT NULL DEFAULT '',
+        key TEXT NOT NULL,
+        value TEXT,
+        saved_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      'CREATE INDEX IF NOT EXISTS idx_hist_sk ON site_content_history (scope, key, id)',
       'CREATE INDEX IF NOT EXISTS idx_app_created_at ON applications (created_at)',
       'CREATE INDEX IF NOT EXISTS idx_app_deleted_at ON applications (deleted_at)',
     ]).catch((e) => { ready = null; throw e })

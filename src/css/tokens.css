@@ -1,0 +1,23 @@
+/* [디자인 토큰] 표준 디자인 시스템(1개). 안정감 있는 블루 + 중립 그레이. 현장은 이 값만 바꿔 브랜드 색을 맞춘다. */
+:root {
+  --c-main: #1d4a85;        /* 주 색상 (신뢰감 있는 블루) */
+  --c-main-d: #153a6a;      /* 주 색상 hover */
+  --c-main-l: #e8eef7;      /* 주 색상 연한 배경 */
+  --c-accent: #b88a3e;      /* 보조 포인트(소제목·강조선) */
+  --c-page: #fff;
+  --c-bg: #f4f6f9;
+  --c-line: #e1e5eb;
+  --c-text: #1f2733;
+  --c-sub: #4a5568;
+  --c-muted: #7a8494;
+  --c-footer-bg: #1b2430;
+  --c-footer-text: #a9b2bf;
+  --c-danger: #c0392b;
+  --c-ok: #1e7e34;
+  --font-base: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --radius: 8px;
+  --max-width: 1180px;
+  --header-h: 72px;
+  --hero-pos: 50% 50%;      /* 히어로 사진 초점(유형별로 layout.heroPos 로 지정) */
+  --img-pos: 50% 50%;
+}
