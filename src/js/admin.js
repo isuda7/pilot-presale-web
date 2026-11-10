@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js'
+import { API_BASE, BASE } from './config.js'
 import { initEditor } from './admin-editor.js'
 
 const KEY = 'presale_admin_token'
@@ -57,6 +57,7 @@ $('login-form').addEventListener('submit', async (e) => {
 })
 
 $('logout').addEventListener('click', logout)
+$('go-edit').href = `${BASE}?edit=1`
 
 $('rows').addEventListener('change', async (e) => {
   if (e.target.classList.contains('st'))

@@ -80,35 +80,41 @@ if (SITE.sample) document.body.insertAdjacentHTML('afterbegin', `<div class="sam
 
 document.getElementById('site-header').innerHTML = `
   <header class="hd"><div class="inner hd-in">
-    <a class="logo" href="${BASE}">${esc(SITE.name)}</a>
+    <a class="logo" href="${BASE}"><span data-e="site" data-f="name">${esc(SITE.name)}</span></a>
     <nav class="gnb-wrap"><ul class="gnb">${nav}${L.header === 'simple' ? '' : applyNav}</ul></nav>
-    <div class="hd-side"><a class="tel" href="tel:${esc(SITE.phone)}">${esc(SITE.phone)}</a>${current === apply ? '' : `<a class="btn sm hd-cta" href="${href(apply)}">${apply.label}</a>`}</div>
+    <div class="hd-side"><a class="tel" href="tel:${esc(SITE.phone)}"><span data-e="site" data-f="phone">${esc(SITE.phone)}</span></a>${current === apply ? '' : `<a class="btn sm hd-cta" href="${href(apply)}">${apply.label}</a>`}</div>
   </div></header>`
 
 // ---- 푸터 ----
 const company = esc(SITE.company.filter((c) => c.value).map((c) => `${c.label} ${c.value}`).join(' · '))
 document.getElementById('site-footer').innerHTML = `
   <footer class="ft"><div class="inner">
-    <div class="ft-top"><strong>${esc(SITE.name)}</strong><span>${esc(SITE.phone)}</span></div>
+    <div class="ft-top"><strong data-e="site" data-f="name">${esc(SITE.name)}</strong><span data-e="site" data-f="phone">${esc(SITE.phone)}</span></div>
     ${company ? `<p class="ft-co">${company}</p>` : ''}
-    ${SITE.address ? `<p>${esc(SITE.address)}${SITE.hours ? ` · 운영시간 ${esc(SITE.hours)}` : ''}</p>` : ''}
+    ${SITE.address ? `<p><span data-e="site" data-f="address">${esc(SITE.address)}</span>${SITE.hours ? ` · 운영시간 <span data-e="site" data-f="hours">${esc(SITE.hours)}</span>` : ''}</p>` : ''}
     ${SITE.notices.map((n) => `<p>${esc(n)}</p>`).join('')}
     <p><a href="${href(MODULES.find((m) => m.key === 'privacy'))}">개인정보처리방침</a>${SITE.showAdminLink ? ` · <a href="${BASE}pages/admin.html">관리자</a>` : ''}${import.meta.env.DEV && !TYPE_NAME ? ' · <a href="/t/">템플릿 목록</a>' : ''}</p>
   </div></footer>`
 
 // ---- 메인 히어로 문구 + 메인 섹션 ----
-const facts = (SITE.hero.facts || []).map(([k, v]) => `<li><span>${esc(k)}</span><strong>${esc(v)}</strong></li>`).join('')
+const facts = (SITE.hero.facts || []).map(([k, v]) => `<li data-row><span data-f="c0">${esc(k)}</span><strong data-f="c1">${esc(v)}</strong></li>`).join('')
 document.querySelectorAll('[data-site]').forEach((el) => {
   const k = el.dataset.site
   const v = { 'hero-title': SITE.hero.title, 'hero-sub': SITE.hero.sub, 'hero-eyebrow': SITE.hero.eyebrow || '' }[k]
-  if (k === 'facts') { el.innerHTML = facts; el.classList.toggle('hidden', !facts) } else if (v !== undefined) { el.textContent = v; if (!v) el.classList.add('hidden') }
+  if (k === 'facts') { el.innerHTML = facts; el.classList.toggle('hidden', !facts); el.dataset.e = 'site'; el.dataset.block = 'facts' } else if (v !== undefined) { el.textContent = v; if (!v) el.classList.add('hidden'); el.dataset.e = 'site'; el.dataset.f = { 'hero-title': 'hero.title', 'hero-sub': 'hero.sub', 'hero-eyebrow': 'hero.eyebrow' }[k] }
 })
 const cta = document.querySelector('[data-site-cta]')
 if (cta) { cta.textContent = FORM.title; cta.href = href(apply) }
 const cta2 = document.querySelector('[data-site-cta2]')
-if (cta2) { cta2.href = href(MODULES.find((m) => m.key === 'biz')); cta2.textContent = SITE.hero.cta2 || '사업개요 보기' }
+if (cta2) { cta2.href = href(MODULES.find((m) => m.key === 'biz')); cta2.textContent = SITE.hero.cta2 || '사업개요 보기'; cta2.dataset.e = 'site'; cta2.dataset.f = 'hero.cta2' }
 if (document.querySelector('.hero')) document.title = SITE.name
 
 renderHome()
 fillContent(current && current.key)
 fillArt()
+
+// ---- 인라인 편집(관리자 로그인 상태에서만) ----
+// 방문자에게는 아무것도 로드되지 않는다. 관리자 토큰이 있으면 편집 바를 불러온다. ?edit=1 로 열면 바로 편집 모드.
+const hasToken = !!sessionStorage.getItem('presale_admin_token')
+if (new URLSearchParams(location.search).get('edit') === '1' && !hasToken) location.replace(`${BASE}pages/admin.html`)
+else if (hasToken && document.querySelector('[data-e]')) import('./inline-edit.js').then((m) => m.initInlineEdit({ start: new URLSearchParams(location.search).get('edit') === '1' }))

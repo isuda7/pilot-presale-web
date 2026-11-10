@@ -271,3 +271,30 @@ table.list th { background: var(--c-bg); }
 .ed-locked { margin-top: 24px; padding: 14px 16px; background: #fff7e0; border: 1px solid #f0e2b0; border-radius: var(--radius); font-size: 14px; color: #6b5200; }
 .ed-hist { display: grid; gap: 8px; margin-top: 8px; } .ed-hist li { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; border: 1px solid var(--c-line); border-radius: var(--radius); padding: 8px 10px; } .ed-hist code { flex: 1; min-width: 160px; color: var(--c-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 960px) { .ed { grid-template-columns: 1fr; } .ed-list { position: static; max-height: 240px; } .ed-grid { grid-template-columns: 1fr; } .ed-row { flex-wrap: wrap; } }
+
+/* ---------- 인라인 편집 모드 (관리자 로그인 상태에서만 동작) ---------- */
+.ie-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 14px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; max-width: calc(100% - 24px); background: #14233b; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 12px 34px rgba(0, 0, 0, .35); font-size: 13px; }
+.ie-bar button { font: inherit; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, .3); background: transparent; color: #fff; cursor: pointer; }
+.ie-bar button:hover:not(:disabled) { background: rgba(255, 255, 255, .14); }
+.ie-bar button:disabled { opacity: .4; cursor: default; }
+.ie-bar .ie-save { background: var(--c-accent); border-color: var(--c-accent); color: #14233b; }
+.ie-bar .ie-save:disabled { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .3); }
+.ie-link { color: #cfe0ff; text-decoration: underline; }
+.ie-hint { color: #9fb2d3; font-size: 12px; } .ie-state { color: #ffd98a; font-weight: 700; }
+.ie-msg.ok { color: #8fe3a2; } .ie-msg.err { color: #ffadad; font-weight: 700; }
+body:has(.ie-bar) { padding-bottom: 76px; }
+html.ie-on [data-f]:not(figure) { outline: 1.5px dashed rgba(29, 140, 255, .55); outline-offset: 2px; cursor: text; border-radius: 3px; min-width: 1.5em; }
+html.ie-on [data-f]:not(figure):hover { background: rgba(29, 140, 255, .08); }
+html.ie-on [data-f]:not(figure):focus { outline: 2px solid #1d8cff; background: rgba(29, 140, 255, .1); }
+html.ie-on figure[data-f="image"] { outline: 1.5px dashed rgba(29, 140, 255, .55); outline-offset: 2px; }
+html.ie-on [data-row] { position: relative; }
+html.ie-on .hero [data-f] { background: rgba(0, 0, 0, .18); }
+.ie-del { position: absolute; top: 6px; right: 6px; z-index: 5; width: 26px; height: 26px; padding: 0; line-height: 1; border-radius: 50%; border: 0; background: #c0392b; color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; }
+.ie-cell { width: 44px; border-bottom: 1px solid var(--c-line); position: relative; } .ie-cell .ie-del { position: static; }
+.ie-add { padding: 8px 16px; border-radius: 8px; border: 1.5px dashed #1d8cff; background: #fff; color: #1d6fcf; font-weight: 700; cursor: pointer; }
+.ie-add-wrap { margin-top: 10px; } .ie-add-li { list-style: none; margin-top: 8px; }
+.facts .ie-add-li { grid-column: 1 / -1; padding: 8px 12px; }
+.c-cards .ie-add-wrap { display: grid; place-items: center; min-height: 80px; border: 1.5px dashed #9ec8ff; border-radius: var(--radius); margin: 0; }
+.ie-img { position: absolute; right: 10px; top: 10px; z-index: 5; padding: 8px 12px; border-radius: 8px; border: 0; background: rgba(20, 35, 59, .88); color: #fff; font-weight: 700; cursor: pointer; }
+.ie-sel { position: absolute; right: 10px; top: 52px; z-index: 6; padding: 8px; border-radius: 8px; font: inherit; }
+@media (max-width: 960px) { .ie-hint { display: none; } }

@@ -8,20 +8,20 @@ const isOn = (m) => m.level === 'L1' || SITE.modules[m.key] !== false
 const mod = (key) => MODULES.find((m) => m.key === key)
 
 function head(m, desc) {
-  return `<div class="sec-head">${m.en ? `<span class="sec-en">${m.en}</span>` : ''}<h2>${m.label}</h2>${desc ? `<p class="sec-desc">${esc(desc)}</p>` : ''}</div>`
+  return `<div class="sec-head">${m.en ? `<span class="sec-en">${m.en}</span>` : ''}<h2>${m.label}</h2>${desc ? `<p class="sec-desc" data-e="c:${m.key}" data-f="lead">${esc(desc)}</p>` : ''}</div>`
 }
 const more = (m) => (m.group || m.key === 'visit' ? `<a class="more" href="${href(m.key)}">${m.label} 자세히 보기 →</a>` : '')
 
 // 섹션 본문 모양
 function body(key, c) {
   if (key === 'schedule' && c.table?.length) {
-    return `<ol class="timeline">${c.table.map(([k, v]) => `<li><strong>${esc(k)}</strong><span>${esc(v)}</span></li>`).join('')}</ol>`
+    return `<ol class="timeline" data-e="c:${key}" data-block="table">${c.table.map(([k, v]) => `<li data-row><strong data-f="c0">${esc(k)}</strong><span data-f="c1">${esc(v)}</span></li>`).join('')}</ol>`
   }
   if ((key === 'biz' || key === 'directions' || key === 'officetel' || key === 'retail') && c.table?.length) {
-    return `<div class="biz-grid">${c.image ? image(c.image) : ''}<div>${tableHtml(c.table)}</div></div>`
+    return `<div class="biz-grid">${c.image ? image(c.image, key) : ''}<div>${tableHtml(c.table, key)}</div></div>`
   }
-  if (key === 'video') return image('video')
-  return [c.image ? image(c.image) : '', c.table?.length ? tableHtml(c.table) : '', c.cards?.length ? cardsHtml(c.cards) : '', c.list?.length ? listHtml(c.list) : ''].join('')
+  if (key === 'video') return image('video', key)
+  return [c.image ? image(c.image, key) : '', c.table?.length ? tableHtml(c.table, key) : '', c.cards?.length ? cardsHtml(c.cards, key) : '', c.list?.length ? listHtml(c.list, key) : ''].join('')
 }
 
 function quick() {
@@ -32,7 +32,7 @@ function quick() {
 
 function cta() {
   const m = mod('visit')
-  return `<section class="cta-band"><div class="inner"><div><h2>${esc(SITE.name)}, 지금 상담해 보세요</h2><p>${SITE.hours ? `운영시간 ${esc(SITE.hours)} · ` : ''}신청하시면 담당자가 순차적으로 연락드립니다.</p></div><div class="cta-act"><a class="tel-big" href="tel:${esc(SITE.phone)}">${esc(SITE.phone)}</a><a class="btn" href="${href(m.key)}">${esc(FORM.title)}</a></div></div></section>`
+  return `<section class="cta-band"><div class="inner"><div><h2><span data-e="site" data-f="name">${esc(SITE.name)}</span>, 지금 상담해 보세요</h2><p>${SITE.hours ? `운영시간 ${esc(SITE.hours)} · ` : ''}신청하시면 담당자가 순차적으로 연락드립니다.</p></div><div class="cta-act"><a class="tel-big" href="tel:${esc(SITE.phone)}"><span data-e="site" data-f="phone">${esc(SITE.phone)}</span></a><a class="btn" href="${href(m.key)}">${esc(FORM.title)}</a></div></div></section>`
 }
 
 export function renderHome() {

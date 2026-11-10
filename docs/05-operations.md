@@ -5,11 +5,11 @@
 
 ## 1. 템플릿 버전 관리
 - 템플릿 저장소가 기준(upstream)이다. 공통(L1·L2·구조 코드) 수정은 **템플릿에서 먼저** 하고 현장으로 전파한다.
-- 버전 형식: `template-vX.Y.Z` 태그. 현재 `0.1.0`(`package.json`의 `version`과 `CHANGELOG.md`를 함께 갱신).
+- 버전 형식: `template-vX.Y.Z` 태그. 현재 `0.4.0`(`package.json`의 `version`, `CHANGELOG.md`, 가이드 4장 `docs/guide/04-updates.md`를 함께 갱신).
   - **X**: 현장 복제본에 수작업이 필요한 변경(파일 구조, 설정 키 변경, 환경변수 추가)
   - **Y**: 기능 추가(새 L2 페이지, 관리자 기능)
   - **Z**: 버그 수정, 문구, 디자인 값
-- 태그는 담당자가 직접 만들고 푸시한다: `git tag template-v0.1.0 && git push origin template-v0.1.0`
+- 태그는 담당자가 직접 만들고 푸시한다: `git tag template-v0.4.0 && git push origin template-v0.4.0`
 - 변경 내용은 `CHANGELOG.md`에 "현장에서 할 일(없음/설정 변경/수작업)"을 반드시 적는다.
 
 ## 2. 현장 × 버전 표
